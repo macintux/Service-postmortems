@@ -58,5 +58,23 @@
       "domain" : "aws.amazon.com",
       "date" : "2012-10-22",
       "url" : "https://aws.amazon.com/message/680342"
+   },
+   {
+      "keywords" : [
+         "aws",
+         "mysql"
+      ],
+      "domain" : "blog.appharbor.com",
+      "date" : "2012-06-29",
+      "url" : "http://blog.appharbor.com/2012/07/05"
+   },
+   {
+      "keywords" : [
+         "google",
+         "app-engine"
+      ],
+      "domain" : "groups.google.com",
+      "date" : "2010-02-24",
+      "url" : "https://groups.google.com/forum/?fromgroups=#!topic/google-appengine/p2QKJ0OSLc8"
    }
 ]
