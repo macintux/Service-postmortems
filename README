@@ -4,6 +4,9 @@ A quick search didn't reveal any master list, so this is me scratching
 my itch.  Currently the only code is a terminal script (Perl) useful
 for updating the list, which is contained in a JSON file.
 
+The script will attempt to reject duplicate URLs, and allows for
+keywords to be provided with spaces or commas as separators.
+
 Please feel free to submit additional entries.
 
 Eventually this repository could include tools to display, search,
