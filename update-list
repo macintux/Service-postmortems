@@ -56,15 +56,20 @@ sub parse_args {
     return ($end, $input_file, $debug);
 }
 
+my $existing_input = read_input($input_file);
 #
 # Unless $debug is true or the input file is protected, write_file
 # will overwrite it
-write_file($debug, $input_file, prompt_for_urls(), read_input($input_file));
+write_file($debug, $input_file,
+           prompt_for_urls(get_keywords($existing_input)),
+           $existing_input);
 
 sub prompt_for_urls {
+    my ($keywords) = @_;
+
     my @results = ();
     while(1) {
-        my ($ok, $data) = prompt_for_entry();
+        my ($ok, $data, $keywords) = prompt_for_entry($keywords);
         return \@results unless $ok eq 'ok';
         push(@results, $data);
     }
@@ -83,17 +88,43 @@ sub match_date {
     return 0;
 }
 
+sub get_keywords {
+    my ($data) = @_;
+
+    my %keys = ();
+
+    for my $h (@{$data}) {
+        for my $k (@{$h->{keywords}}) {
+            $keys{$k} = 1;
+        }
+    }
+    return \%keys;
+}
+
+sub keyword_fun {
+    my ($keywords) = @_;
+
+    return sub {
+        if ($_[0] eq '?') {
+            print " * ", join("\n * ", sort keys %{$keywords}), "\n";
+            return 0;
+        }
+        return 1;
+    };
+}
+
 sub prompt_for_entry {
+    my ($keywords) = @_;
     my ($ok1, $url) = get_input("URL ('quit' to end)", \&match_url);
-    return ('quit', '') if $ok1 eq 'quit';
+    return ('quit', '', $keywords) if $ok1 eq 'quit';
     die "Aborted\n" unless $ok1 eq 'ok';
 
     my ($ok2, $source) = grab_domain($url);
     die "Aborted\n" unless $ok2 eq 'ok';
 
-    my ($ok3, $keywords) = get_input("Keywords?", undef);
+    my ($ok3, $keys) = get_input("Keywords (? for list)", keyword_fun($keywords));
     die "Aborted\n" unless $ok3 eq 'ok';
-    my @keys = split(/[,\s]+/, $keywords);
+    my @keys = split(/[,\s]+/, $keys);
 
     my ($ok4, $date) = get_input("First day of incident (YYYY-MM-DD)", \&match_date);
     die "Aborted\n" unless $ok4 eq 'ok';
@@ -102,7 +133,18 @@ sub prompt_for_entry {
             { url => $url,
               domain => $source,
               keywords => \@keys,
-              date => $date});
+              date => $date},
+            add_keywords($keywords, \@keys)
+           );
+}
+
+sub add_keywords {
+    my ($keys, $new) = @_;
+
+    for my $key (@{$new}) {
+        $keys->{$key} = 1;
+    }
+    return $keys;
 }
 
 sub match_url {
@@ -137,7 +179,7 @@ sub get_input {
     my $input = <STDIN>;
     chomp $input;
 
-    $input =~ normalize($input);
+    $input = normalize($input);
 
     if ($match) {
         return get_input($prompt, $match)
