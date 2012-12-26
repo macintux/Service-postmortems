@@ -1,0 +1,186 @@
+#!/usr/bin/perl -w
+
+##
+# Script to update a JSON file with technical postmortem URLs.
+#
+# You may detect a whiff of Erlang here.
+#
+# Author: John R. Daily
+# Date: 2012-12-26
+##
+
+use strict;
+use warnings;
+
+use JSON;
+
+use Getopt::Long;
+
+sub usage {
+    return <<END;
+update-list <file> [--debug]
+
+The file specified will be appended (technically overwritten) if it
+exists.
+
+The JSON will be a list of dictionary values; each value should
+contain the URL of the postmortem, the domain of the URL, the first
+date of the outage, and any relevant keywords.
+
+--debug means do everything but write the new file. The content that
+would be written will be displayed to the terminal instead.  No
+other helpful debugging information will be provided.
+END
+}
+
+my ($usage, $input_file, $debug) = parse_args();
+
+if ($usage) {
+    print usage();
+    exit;
+}
+
+
+sub parse_args {
+    my $debug = 0;
+    my $end = 0;
+    my $help = 0;
+    my $input_file = "";
+
+    my $result = GetOptions("debug" => \$debug,
+                            "help" => \$help);
+    $input_file = $ARGV[0] if @ARGV > 0;
+
+    $end = ($help || !$input_file || !$result);
+
+    return ($end, $input_file, $debug);
+}
+
+#
+# Unless $debug is true or the input file is protected, write_file
+# will overwrite it
+write_file($debug, $input_file, prompt_for_urls(), read_input($input_file));
+
+sub prompt_for_urls {
+    my @results = ();
+    while(1) {
+        my ($ok, $data) = prompt_for_entry();
+        return \@results unless $ok eq 'ok';
+        push(@results, $data);
+    }
+}
+
+sub match_date {
+    my ($date) = @_;
+
+    if ($date =~ /^(\d{4})-(\d{2})-(\d{2})$/) {
+        if ($1 > 1950 && $1 < 2200
+            && $2 > 0 && $2 < 13
+            && $3 > 0 && $3 < 32) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+sub prompt_for_entry {
+    my ($ok1, $url) = get_input("URL?", \&match_url);
+    return ('quit', '') if $ok1 eq 'quit';
+    die "Aborted\n" unless $ok1 eq 'ok';
+
+    my ($ok2, $source) = grab_domain($url);
+    die "Aborted\n" unless $ok2 eq 'ok';
+
+    my ($ok3, $keywords) = get_input("Keywords?", undef);
+    die "Aborted\n" unless $ok3 eq 'ok';
+    my @keys = split(/[,\s]+/, $keywords);
+
+    my ($ok4, $date) = get_input("First day of incident (YYYY-MM-DD)", \&match_date);
+    die "Aborted\n" unless $ok4 eq 'ok';
+
+    return ('ok',
+            { url => $url,
+              domain => $source,
+              keywords => \@keys,
+              date => $date});
+}
+
+sub match_url {
+    my ($url) = @_;
+
+    return $url =~ /\S/;
+}
+
+sub grab_domain {
+    my ($url) = @_;
+
+    if ($url =~ m#\w+://([^/]+)/#) {
+        return ('ok', $1);
+    }
+
+    return ('ok', (split(m#/#, $url))[0]);
+}
+
+#
+# Strip away leading/trailing whitespace
+sub normalize {
+    my ($str) = @_;
+    $str =~ s/^\s*//;
+    $str =~ s/\s*$//;
+    return $str;
+}
+
+sub get_input {
+    my ($prompt, $match) = @_;
+
+    printf("%s  ", $prompt);
+    my $input = <STDIN>;
+    chomp $input;
+
+    $input =~ normalize($input);
+
+    if ($match) {
+        return get_input($prompt, $match)
+          unless $match->($input);
+    }
+
+    if ($input eq 'q' || $input eq 'quit') {
+        return ('quit', undef);
+    }
+
+    return ('ok', $input);
+}
+
+sub write_file {
+    my ($debug, $file, $new_content, $old_content) = @_;
+
+    push(@{$old_content}, @{$new_content});
+    my $json = JSON->new->allow_nonref;
+    my $to_print = $json->pretty->encode($old_content);
+
+    if ($debug || (-e $file && ! -w $file)) {
+        print $to_print, "\n";
+    } else {
+        open(OUT, ">$file") || die;
+        print OUT $to_print;
+        close(OUT);
+    }
+}
+
+
+#
+# Takes a filename, attempts to read it, and returns a list reference
+# of hashes, assuming the JSON is constructed to spec
+sub read_input {
+    my ($file) = @_;
+
+    return [] unless open(IN, $file);
+    my @file_content = <IN>;
+    close(IN);
+
+    my $content = join('', @file_content);
+    return [] unless $content =~ /\S/;
+
+    my $json = JSON->new->allow_nonref;
+    return $json->decode($content);
+}

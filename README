@@ -1,0 +1,7 @@
+Internet services postmortems are educational; let's track 'em.
+
+A quick search didn't reveal any master list, so this is me scratching
+my itch.  Currently the only code is a terminal script (Perl) useful
+for updating the list, which is contained in a JSON file.
+
+Please feel free to submit additional entries.
