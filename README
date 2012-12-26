@@ -11,3 +11,7 @@ Please feel free to submit additional entries.
 
 Eventually this repository could include tools to display, search,
 etc.  Don't hold your breath.
+
+See also: [Jeff Hammerbacher's list of well-written postmortems on Quora][jeff-quora].
+
+[jeff-quora]: http://www.quora.com/Jeff-Hammerbacher/Post-mortems
