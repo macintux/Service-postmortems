@@ -76,5 +76,29 @@
       "domain" : "groups.google.com",
       "date" : "2010-02-24",
       "url" : "https://groups.google.com/forum/?fromgroups=#!topic/google-appengine/p2QKJ0OSLc8"
+   },
+   {
+      "keywords" : [
+         "network"
+      ],
+      "domain" : "github.com",
+      "date" : "2012-11-30",
+      "url" : "https://github.com/blog/1346-network-problems-last-friday"
+   },
+   {
+      "keywords" : [
+         "power"
+      ],
+      "domain" : "www.rackspace.com",
+      "date" : "2009-06-29",
+      "url" : "http://www.rackspace.com/blog/data-center-update-as-of-530-cst/"
+   },
+   {
+      "keywords" : [
+         "routing"
+      ],
+      "domain" : "status.heroku.com",
+      "date" : "2012-06-07",
+      "url" : "https://status.heroku.com/incidents/372"
    }
 ]
