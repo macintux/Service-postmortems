@@ -161,7 +161,7 @@ sub keyword_fun {
             return BLANK_OK;
         }
 
-        return $_[0];
+        return $input;
     };
 }
 
