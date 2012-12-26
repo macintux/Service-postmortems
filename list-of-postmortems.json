@@ -15,5 +15,13 @@
       "domain" : "techblog.netflix.com",
       "date" : "2012-10-22",
       "url" : "http://techblog.netflix.com/2012/10/post-mortem-of-october-222012-aws.html"
+   },
+   {
+      "keywords" : [
+         "routing"
+      ],
+      "domain" : "blog.cloudflare.com",
+      "date" : "2012-05-02",
+      "url" : "http://blog.cloudflare.com/todays-outage-post-mortem"
    }
 ]
