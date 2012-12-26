@@ -40,5 +40,23 @@
       "domain" : "aws.amazon.com",
       "date" : "2012-08-07",
       "url" : "http://aws.amazon.com/message/2329B7/"
+   },
+   {
+      "keywords" : [
+         "aws",
+         "upgrade"
+      ],
+      "domain" : "aws.amazon.com",
+      "date" : "2012-04-21",
+      "url" : "http://aws.amazon.com/message/65648/"
+   },
+   {
+      "keywords" : [
+         "aws",
+         "memory-leak"
+      ],
+      "domain" : "aws.amazon.com",
+      "date" : "2012-10-22",
+      "url" : "https://aws.amazon.com/message/680342/"
    }
 ]
