@@ -14,6 +14,8 @@ use warnings;
 
 use JSON;
 
+use constant BLANK_OK => "__ok";
+
 use Getopt::Long;
 
 sub usage {
@@ -146,10 +148,19 @@ sub keyword_fun {
     my ($keywords) = @_;
 
     return sub {
-        if ($_[0] eq '?') {
+        my $input = shift;
+
+        if ($input eq '?') {
             print " * ", join("\n * ", sort keys %{$keywords}), "\n";
             return 0;
         }
+
+        #
+        # For keywords, we accept empty input
+        if ($input eq '') {
+            return BLANK_OK;
+        }
+
         return $_[0];
     };
 }
@@ -232,7 +243,8 @@ sub get_input {
           unless $matched_input;
     }
 
-    $input = $matched_input if $matched_input;
+    $input = $matched_input
+      if $matched_input && $matched_input ne BLANK_OK;
 
     if ($input eq 'q' || $input eq 'quit') {
         return ('quit', undef);
