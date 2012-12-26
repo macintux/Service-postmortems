@@ -23,5 +23,22 @@
       "domain" : "blog.cloudflare.com",
       "date" : "2012-05-02",
       "url" : "http://blog.cloudflare.com/todays-outage-post-mortem"
+   },
+   {
+      "keywords" : [
+         "aws"
+      ],
+      "domain" : "techblog.netflix.com",
+      "date" : "2012-06-29",
+      "url" : "http://techblog.netflix.com/2012/07/lessons-netflix-learned-from-aws-storm.html"
+   },
+   {
+      "keywords" : [
+         "aws",
+         "power"
+      ],
+      "domain" : "aws.amazon.com",
+      "date" : "2012-08-07",
+      "url" : "http://aws.amazon.com/message/2329B7/"
    }
 ]
