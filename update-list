@@ -61,15 +61,16 @@ my $existing_input = read_input($input_file);
 # Unless $debug is true or the input file is protected, write_file
 # will overwrite it
 write_file($debug, $input_file,
-           prompt_for_urls(get_keywords($existing_input)),
+           prompt_for_urls(get_keywords($existing_input),
+                           get_urls($existing_input)),
            $existing_input);
 
 sub prompt_for_urls {
-    my ($keywords) = @_;
+    my ($keywords, $urls) = @_;
 
     my @results = ();
     while(1) {
-        my ($ok, $data, $keywords) = prompt_for_entry($keywords);
+        my ($ok, $data, $keywords, $urls) = prompt_for_entry($keywords, $urls);
         return \@results unless $ok eq 'ok';
         push(@results, $data);
     }
@@ -82,7 +83,7 @@ sub match_date {
         if ($1 > 1950 && $1 < 2200
             && $2 > 0 && $2 < 13
             && $3 > 0 && $3 < 32) {
-            return 1;
+            return $date;
         }
     }
     return 0;
@@ -101,6 +102,46 @@ sub get_keywords {
     return \%keys;
 }
 
+sub get_urls {
+    my ($data) = @_;
+
+    my %keys = ();
+
+    for my $h (@{$data}) {
+        $keys{$h->{url}} = 1;
+    }
+    return \%keys;
+}
+
+sub url_fun {
+    my ($urls) = @_;
+
+    return sub {
+        my $url = shift;
+
+        #
+        # Make sure we have at least one non-whitespace character
+        return 0 unless $url =~ /\S/;
+
+        if (defined $urls->{$url}) {
+            print STDERR "Already have that URL in our data set\n";
+            return 0;
+        }
+
+        # Drop trailing slash and anything that follows,
+        # if appropriate
+        my $shorter_url = $url;
+        $shorter_url =~ s#/[^/]*$##;
+
+        if (defined $urls->{$shorter_url}) {
+            print STDERR "Already have $shorter_url in our data set\n";
+            return 0;
+        }
+
+        return $shorter_url;
+    };
+}
+
 sub keyword_fun {
     my ($keywords) = @_;
 
@@ -109,14 +150,14 @@ sub keyword_fun {
             print " * ", join("\n * ", sort keys %{$keywords}), "\n";
             return 0;
         }
-        return 1;
+        return $_[0];
     };
 }
 
 sub prompt_for_entry {
-    my ($keywords) = @_;
-    my ($ok1, $url) = get_input("URL ('quit' to end)", \&match_url);
-    return ('quit', '', $keywords) if $ok1 eq 'quit';
+    my ($keywords, $urls) = @_;
+    my ($ok1, $url) = get_input("URL ('quit' to end)", url_fun($urls));
+    return ('quit', '', $keywords, $urls) if $ok1 eq 'quit';
     die "Aborted\n" unless $ok1 eq 'ok';
 
     my ($ok2, $source) = grab_domain($url);
@@ -134,11 +175,12 @@ sub prompt_for_entry {
               domain => $source,
               keywords => \@keys,
               date => $date},
-            add_keywords($keywords, \@keys)
+            add_values($keywords, \@keys),
+            add_values($urls, [ $url ])
            );
 }
 
-sub add_keywords {
+sub add_values {
     my ($keys, $new) = @_;
 
     for my $key (@{$new}) {
@@ -181,10 +223,16 @@ sub get_input {
 
     $input = normalize($input);
 
+    my $matched_input = '';
+
     if ($match) {
+        $matched_input = $match->($input);
+
         return get_input($prompt, $match)
-          unless $match->($input);
+          unless $matched_input;
     }
+
+    $input = $matched_input if $matched_input;
 
     if ($input eq 'q' || $input eq 'quit') {
         return ('quit', undef);
