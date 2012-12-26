@@ -130,8 +130,12 @@ sub url_fun {
             return 0;
         }
 
-        # Drop trailing slash and anything that follows,
-        # if appropriate
+        if (defined $urls->{$url . '/'}) {
+            print STDERR "Already have that URL in our data set\n";
+            return 0;
+        }
+
+        # Drop trailing slash and anything that follows for comparison
         my $shorter_url = $url;
         $shorter_url =~ s#/[^/]*$##;
 
@@ -140,7 +144,7 @@ sub url_fun {
             return 0;
         }
 
-        return $shorter_url;
+        return $url;
     };
 }
 
