@@ -84,7 +84,7 @@ sub match_date {
 }
 
 sub prompt_for_entry {
-    my ($ok1, $url) = get_input("URL?", \&match_url);
+    my ($ok1, $url) = get_input("URL ('quit' to end)", \&match_url);
     return ('quit', '') if $ok1 eq 'quit';
     die "Aborted\n" unless $ok1 eq 'ok';
 
