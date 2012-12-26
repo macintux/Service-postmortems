@@ -5,3 +5,6 @@ my itch.  Currently the only code is a terminal script (Perl) useful
 for updating the list, which is contained in a JSON file.
 
 Please feel free to submit additional entries.
+
+Eventually this repository could include tools to display, search,
+etc.  Don't hold your breath.
