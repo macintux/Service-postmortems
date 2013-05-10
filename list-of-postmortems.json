@@ -110,5 +110,26 @@
       "domain" : "aws.amazon.com",
       "date" : "2012-12-24",
       "url" : "http://aws.amazon.com/message/680587/"
+   },
+   {
+      "keywords" : [
+         "yaml",
+         "rubygems",
+         "ruby",
+         "gems"
+      ],
+      "domain" : "about.travis-ci.org",
+      "date" : "2013-01-30",
+      "url" : "http://about.travis-ci.org/blog/2013-01-31-post-mortem-build-outage/"
+   },
+   {
+      "keywords" : [
+         "theonion",
+         "twitter",
+         "security"
+      ],
+      "domain" : "theonion.github.io",
+      "date" : "2013-05-08",
+      "url" : "http://theonion.github.io/blog/2013/05/08/how-the-syrian-electronic-army-hacked-the-onion/"
    }
 ]
