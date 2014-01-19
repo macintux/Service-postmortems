@@ -167,5 +167,15 @@
       "domain" : "theonion.github.io",
       "date" : "2013-05-08",
       "url" : "http://theonion.github.io/blog/2013/05/08/how-the-syrian-electronic-army-hacked-the-onion/"
+   },
+   {
+      "keywords" : [
+         "github",
+         "automation",
+         "dns"
+      ],
+      "domain" : "github.com",
+      "date" : "2014-01-08",
+      "url" : "https://github.com/blog/1759-dns-outage-post-mortem"
    }
 ]
